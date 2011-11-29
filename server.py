@@ -1,68 +1,49 @@
-#!/usr/bin/env python
-
-import zmq
-import sys
-import zmq
 import gc
+import zmq
 
 from rat import ROOT
-
 from chroma import Simulation
-from chroma.tools import enable_debug_on_crash
-
 import chroma_sno
+
 import serialize
 
 ack = '__CHROMA_ACK__'
 helo = '__CHROMA_HELO__'
 
-if __name__ == '__main__':
-    if len(sys.argv) > 1:
-        address = sys.argv[1]
-    else:
-        address = 'tcp://*:5024'
+class ChromaServer:
+    def __init__(self, address):
+        self.address = address
+        self.context = zmq.Context()
+        self.socket = context.socket(zmq.REP)
+        self.socket.bind(address)
 
-    enable_debug_on_crash()
+    def serve_forever():
+        while True:
+            msg = socket.recv(copy=False)
+            socket.send(ack)
 
-    # set up zeromq socket
-    context = zmq.Context()
-    socket = context.socket(zmq.REP)
-    socket.bind(address)
+            # parse ChromaPhotonList
+            cpl = serialize.deserialize(msg.bytes, ROOT.RAT.ChromaPhotonList.Class())
+            if not cpl:
+                print 'Error deserializing message data'
+                continue
 
-    msg = socket.recv()
-    print msg
-    if msg == helo:
-        socket.send(ack)
-    else:
-        print 'Malformed hello packet from client:', msg
-        # exit
+            print 'Received ChromaPhotonList with', cpl.x.size(), 'photons'
+            photons = photons.photons_from_cpl(cpl)
 
-    while True:
-        msg = socket.recv(copy=False)
-        socket.send(ack)
+            # propagate photons in chroma simulation
+            detector = chroma_sno.sno()
+            sim = Simulation(detector)
+            event = sim.simulate(photons, keep_photons_end=True).next()
+            print event
 
-        # parse ChromaPhotonList
-        cpl = serialize.deserialize(msg.bytes, ROOT.RAT.ChromaPhotonList.Class())
-        if not cpl:
-            print 'Error deserializing message data'
-            continue
+            # return final photons to client
+            cpl = photons.cpl_from_photons(event.photons_end)
+            msg = serialize.serialize(cpl)
+            print type(msg), len(msg), str(msg[:20])
+            socket.send(msg)
 
-        print 'Received ChromaPhotonList with', cpl.x.size(), 'photons'
-        photons = photons.photons_from_cpl(cpl)
-
-        # propagate photons in chroma simulation
-        detector = chroma_sno.sno()
-        sim = Simulation(detector)
-        event = sim.simulate(photons, keep_photons_end=True).next()
-        print event
-
-        # return final photons to client
-        cpl = photons.cpl_from_photons(event.photons_end)
-        msg = serialize.serialize(cpl)
-        print type(msg), len(msg), str(msg[:20])
-        socket.send(msg)
-
-        # cleanup?
-        del photons
-        gc.collect()
+            # cleanup?
+            del photons
+            gc.collect()
 
