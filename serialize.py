@@ -1,18 +1,23 @@
-import ctypes
+import os
 import array
-import ROOT
+from rat import ROOT
 
-def serialize(o):
+ROOT.gROOT.ProcessLine(".L serialize.C+")
+
+def serialize(o, cls=ROOT.TObject):
     '''serializes ROOT object `o` via a ROOT.TBufferFile, returns a character
     array.array of `o`'s contents
     '''
     buf = ROOT.TBufferFile(ROOT.TBuffer.kWrite)
     buf.Reset()
-    buf.WriteObject(o)
+    buf.WriteObjectAny(o, cls)
 
-    s = ctypes.string_at(buf.Buffer(), buf.Length())
+    mv = memoryview(bytearray(buf.Length())).tobytes()
+    a = array.array('c', mv)
 
-    return s
+    ROOT.Serialize(buf, a)
+
+    return a
 
 def deserialize(s, cls):
     '''rebuilds a ROOT object from a TBufferFile buffer, given such a buffer as

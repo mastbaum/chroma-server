@@ -6,7 +6,7 @@ from chroma.tools import enable_debug_on_crash
 import chroma_sno
 
 def serve(address):
-    print 'initializing chroma server...'
+    print 'reticulating splines...'
     s = server.ChromaServer(address, chroma_sno.sno())
 
     print 'starting chroma server listening on', address

@@ -41,7 +41,7 @@ class ChromaServer:
             # return final (detected) photons to client
             photons_out = event.photons_end
             cpl = photons.cpl_from_photons(photons_out, process_mask=SURFACE_DETECT, detector=self.detector)
-            msg = serialize.serialize(cpl)
+            msg = serialize.serialize(cpl, ROOT.RAT.ChromaPhotonList.Class())
             print type(msg), len(msg), str(msg[:20])
             self.socket.send(msg)
 
