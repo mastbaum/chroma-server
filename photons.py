@@ -24,28 +24,42 @@ def photons_from_cpl(cpl):
 
     photons = Photons(pos, dir, pol, wavelengths, t=t)
 
-    print photons
     return photons
 
-def cpl_from_photons(photons):
-    '''make a ROOT.RAT.ChromaPhotonList from a chroma Photons object'''
-    x = numpy.array(photons.pos[:,0])
-    y = numpy.array(photons.pos[:,1])
-    z = numpy.array(photons.pos[:,2])
+def cpl_from_photons(photons, process_mask=None, detector=None):
+    '''make a ROOT.RAT.ChromaPhotonList from a chroma Photons object
 
-    px = numpy.array(photons.dir[:,0])
-    py = numpy.array(photons.dir[:,1])
-    pz = numpy.array(photons.dir[:,2])
+      * if process_mask is provided, photons are filtered accordingly
+      * if detector is provided, pmt ids are calculated. else, they are set to -1
+    '''
+    if process_mask:
+        mask = (photons.flags & process_mask) > 0
+    else:
+        mask = np.ones_like(flags, dtype=bool)
 
-    polx = numpy.array(photons.pol[:,0])
-    poly = numpy.array(photons.pol[:,1])
-    polz = numpy.array(photons.pol[:,2])
+    x = photons.pos[mask,0]
+    y = photons.pos[mask,1]
+    z = photons.pos[mask,2]
 
-    t = numpy.array(photons.t)
-    wavelength = numpy.array(photons.wavelengths)
+    px = photons.dir[mask,0]
+    py = photons.dir[mask,1]
+    pz = photons.dir[mask,2]
 
-    pmtid = numpy.array(map(int,wavelength), dtype=numpy.int32)
-    #pmtid = f(photons.last_hit_triangles[i]) #numpy.int32!!!
+    polx = photons.pol[mask,0]
+    poly = photons.pol[mask,1]
+    polz = photons.pol[mask,2]
+
+    t = photons.t[mask]
+    wavelength = photons.wavelengths[mask]
+
+    if detector:
+        c_idx_c_id = detector.channel_index_to_channel_id # channel index -> channel id
+        s_id_c_idx = detector.solid_id_to_channel_index   # solid id -> channel index
+        t_id_s_id = detector.solid_id                     # triangle id -> solid id
+        t_id = photons.last_hit_triangles[mask]           # last hit triangle id
+        pmtid = c_idx_c_id[s_id_c_idx[t_id_s_id[t_id]]]
+    else:
+        pmtid = -1 * numpy.ones_like(t, dtype=int)
 
     cpl = ROOT.RAT.ChromaPhotonList()
     cpl.FromArrays(x,    y,    z,

@@ -43,7 +43,7 @@ char* ChromaPhotonList::Serialize()
   char* b = (char*) malloc(bufferSize * sizeof(char));
   memcpy(b, buf.Buffer(), bufferSize);
 
-  return b
+  return b;
 }
 
 } // namespace RAT

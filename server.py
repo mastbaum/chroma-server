@@ -1,8 +1,8 @@
-import gc
 import zmq
 
 from rat import ROOT
 from chroma import Simulation
+from chroma.event import SURFACE_DETECT
 
 import serialize
 import photons
@@ -38,12 +38,10 @@ class ChromaServer:
             event = self.sim.simulate(photons_in, keep_photons_end=True).next()
             print event
 
-            # return final photons to client
-            cpl = photons.cpl_from_photons(event.photons_end)
+            # return final (detected) photons to client
+            photons_out = event.photons_end
+            cpl = photons.cpl_from_photons(photons_out, process_mask=SURFACE_DETECT, detector=self.detector)
             msg = serialize.serialize(cpl)
             print type(msg), len(msg), str(msg[:20])
             self.socket.send(msg)
-
-            # cleanup?
-            gc.collect()
 
