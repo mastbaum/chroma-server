@@ -6,6 +6,7 @@ from chroma import Simulation
 import chroma_sno
 
 import serialize
+import photons
 
 ack = '__CHROMA_ACK__'
 helo = '__CHROMA_HELO__'
@@ -14,13 +15,13 @@ class ChromaServer:
     def __init__(self, address):
         self.address = address
         self.context = zmq.Context()
-        self.socket = context.socket(zmq.REP)
+        self.socket = self.context.socket(zmq.REP)
         self.socket.bind(address)
 
-    def serve_forever():
+    def serve_forever(self):
         while True:
-            msg = socket.recv(copy=False)
-            socket.send(ack)
+            msg = self.socket.recv(copy=False)
+            self.socket.send(ack)
 
             # parse ChromaPhotonList
             cpl = serialize.deserialize(msg.bytes, ROOT.RAT.ChromaPhotonList.Class())
@@ -29,21 +30,20 @@ class ChromaServer:
                 continue
 
             print 'Received ChromaPhotonList with', cpl.x.size(), 'photons'
-            photons = photons.photons_from_cpl(cpl)
+            photons_in = photons.photons_from_cpl(cpl)
 
             # propagate photons in chroma simulation
             detector = chroma_sno.sno()
             sim = Simulation(detector)
-            event = sim.simulate(photons, keep_photons_end=True).next()
+            event = sim.simulate(photons_in, keep_photons_end=True).next()
             print event
 
             # return final photons to client
             cpl = photons.cpl_from_photons(event.photons_end)
             msg = serialize.serialize(cpl)
             print type(msg), len(msg), str(msg[:20])
-            socket.send(msg)
+            self.socket.send(msg)
 
             # cleanup?
-            del photons
             gc.collect()
 

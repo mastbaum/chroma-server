@@ -1,12 +1,6 @@
-import os
+import ctypes
 import array
 import ROOT
-
-# note: due to root, serialize.C must be compiled with the interpreter's cwd
-# inside this module
-module_dir = os.path.dirname(os.path.abspath(__file__))
-if not os.path.exists(os.path.join(module_dir, 'serialize_C.so')):
-    ROOT.gROOT.ProcessLine(".L serialize.C+")
 
 def serialize(o):
     '''serializes ROOT object `o` via a ROOT.TBufferFile, returns a character
@@ -16,12 +10,9 @@ def serialize(o):
     buf.Reset()
     buf.WriteObject(o)
 
-    mv = memoryview(bytearray(buf.Length())).tobytes()
-    a = array.array('c', mv)
+    s = ctypes.string_at(buf.Buffer(), buf.Length())
 
-    ROOT.Serialize(buf, a)
-
-    return a
+    return s
 
 def deserialize(s, cls):
     '''rebuilds a ROOT object from a TBufferFile buffer, given such a buffer as

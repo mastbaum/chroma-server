@@ -1,3 +1,4 @@
+import numpy
 from rat import ROOT
 from chroma.event import Photons
 
