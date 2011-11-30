@@ -3,9 +3,11 @@
 import sys
 import server
 from chroma.tools import enable_debug_on_crash
+import chroma_sno
 
 def serve(address):
-    s = server.ChromaServer(address)
+    print 'initializing chroma server...'
+    s = server.ChromaServer(address, chroma_sno.sno())
 
     print 'starting chroma server listening on', address
     s.serve_forever()

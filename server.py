@@ -3,25 +3,27 @@ import zmq
 
 from rat import ROOT
 from chroma import Simulation
-import chroma_sno
 
 import serialize
 import photons
 
-ack = '__CHROMA_ACK__'
-helo = '__CHROMA_HELO__'
-
 class ChromaServer:
-    def __init__(self, address):
+    def __init__(self, address, detector):
+        # set up zeromq socket
         self.address = address
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.REP)
         self.socket.bind(address)
 
+        # set up simulation
+        self.detector = detector
+        self.sim = Simulation(self.detector)
+
     def serve_forever(self):
+        '''listen for incoming (serialized) initial ChromaPhotonLists,
+        propagate photons in chroma, and reply with final photon list'''
         while True:
             msg = self.socket.recv(copy=False)
-            self.socket.send(ack)
 
             # parse ChromaPhotonList
             cpl = serialize.deserialize(msg.bytes, ROOT.RAT.ChromaPhotonList.Class())
@@ -33,9 +35,7 @@ class ChromaServer:
             photons_in = photons.photons_from_cpl(cpl)
 
             # propagate photons in chroma simulation
-            detector = chroma_sno.sno()
-            sim = Simulation(detector)
-            event = sim.simulate(photons_in, keep_photons_end=True).next()
+            event = self.sim.simulate(photons_in, keep_photons_end=True).next()
             print event
 
             # return final photons to client
