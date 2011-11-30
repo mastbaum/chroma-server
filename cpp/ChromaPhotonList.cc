@@ -32,19 +32,5 @@ void ChromaPhotonList::FromArrays(float* _x,    float* _y,    float* _z,
   }
 }
 
-char* ChromaPhotonList::Serialize()
-{
-  TBufferFile buf(TBuffer::kWrite);
-  buf.Reset();
-
-  buf.WriteObjectAny(this, this->Class());
-  int bufferSize = buf.Length();
-
-  char* b = (char*) malloc(bufferSize * sizeof(char));
-  memcpy(b, buf.Buffer(), bufferSize);
-
-  return b;
-}
-
 } // namespace RAT
 

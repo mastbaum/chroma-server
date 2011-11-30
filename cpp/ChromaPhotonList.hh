@@ -26,7 +26,7 @@ public:
   ChromaPhotonList() : TObject() {};
   ~ChromaPhotonList() {};
 
-  inline void AddPhoton(G4ThreeVector pos, G4ThreeVector mom, G4ThreeVector pol, float _t, float _wavelength) {
+  inline void AddPhoton(G4ThreeVector pos, G4ThreeVector mom, G4ThreeVector pol, float _t, float _wavelength, int _pmtid=-1) {
     x.push_back(pos.x());
     y.push_back(pos.y());
     z.push_back(pos.z());
@@ -38,6 +38,7 @@ public:
     polz.push_back(pol.z());
     t.push_back(_t);
     wavelength.push_back(_wavelength);
+    pmtid.push_back(_pmtid);
   }
 
   void ClearAll() {
@@ -52,6 +53,7 @@ public:
     polz.clear();
     t.clear();
     wavelength.clear();
+    pmtid.clear();
   }
 
   // Build a ChromaPhotonList object from C arrays
@@ -62,12 +64,6 @@ public:
                   float* wavelength,
                   int* pmtid,
                   int nphotons);
-
-  // Serialize this ChromaPhotonList through a TBufferFile buffer.
-  //
-  // Return a void* instead of a char*, lest PyROOT cast it to a string and
-  // cut it off at the first null character.
-  char* Serialize();
 
   std::vector<float> x;
   std::vector<float> y;
