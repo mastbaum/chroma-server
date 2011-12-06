@@ -3,7 +3,9 @@ from rat import ROOT
 from chroma.event import Photons
 
 def photons_from_cpl(cpl):
-    '''make a chroma Photons object out of a ROOT.RAT.ChromaPhotonList'''
+    '''make a chroma Photons object out of a ROOT.RAT.ChromaPhotonList. pmt id
+    is ignored.
+    '''
     x = numpy.array(cpl.x, dtype=numpy.float32)
     y = numpy.array(cpl.y, dtype=numpy.float32)
     z = numpy.array(cpl.z, dtype=numpy.float32)

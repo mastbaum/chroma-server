@@ -8,6 +8,9 @@ import serialize
 import photons
 
 class ChromaServer:
+    '''a simple zeromq socket server which listens for incoming
+    ChromaPhotonList packets and replies with final (hit) photons
+    '''
     def __init__(self, address, detector):
         # set up zeromq socket
         self.address = address
@@ -21,7 +24,8 @@ class ChromaServer:
 
     def serve_forever(self):
         '''listen for incoming (serialized) initial ChromaPhotonLists,
-        propagate photons in chroma, and reply with final photon list'''
+        propagate photons in chroma, and reply with final photon list
+        '''
         while True:
             msg = self.socket.recv(copy=False)
 
@@ -31,17 +35,15 @@ class ChromaServer:
                 print 'Error deserializing message data'
                 continue
 
-            print 'Received ChromaPhotonList with', cpl.x.size(), 'photons'
             photons_in = photons.photons_from_cpl(cpl)
+            print 'processing', len(photons_in), 'photons'
 
             # propagate photons in chroma simulation
             event = self.sim.simulate(photons_in, keep_photons_end=True).next()
-            print event
 
             # return final (detected) photons to client
             photons_out = event.photons_end
             cpl = photons.cpl_from_photons(photons_out, process_mask=SURFACE_DETECT, detector=self.detector)
             msg = serialize.serialize(cpl, ROOT.RAT.ChromaPhotonList.Class())
-            print type(msg), len(msg), str(msg[:20])
             self.socket.send(msg)
 
