@@ -14,7 +14,7 @@ setup(
     include_package_data = True,
     package_dir = {'chroma_server': 'chroma_server'},
     package_data = {'chroma_server': ['*.C']},
-    scripts = ['bin/chroma_server'],
+    scripts = ['bin/chroma-server'],
     install_requires = ['chroma']
 )
 
