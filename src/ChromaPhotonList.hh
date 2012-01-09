@@ -11,15 +11,13 @@
 ///
 ////////////////////////////////////////////////////////////////////
 
-#ifndef __RAT_ChromaPhotonList__
-#define __RAT_ChromaPhotonList__
+#ifndef __ChromaPhotonList__
+#define __ChromaPhotonList__
 
 #include <TObject.h>
 #include <G4ThreeVector.hh>
 #include <string>
 #include <vector>
-
-namespace RAT {
 
 class ChromaPhotonList : public TObject {
 public:
@@ -80,8 +78,6 @@ public:
 
   ClassDef(ChromaPhotonList, 1);
 };
-
-} // namespace RAT
 
 #endif
 

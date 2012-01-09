@@ -1,12 +1,10 @@
-#include <RAT/ChromaPhotonList.hh>
+#include <ChromaPhotonList.hh>
 #include <TBufferFile.h>
 #include <TBuffer.h>
 #include <TString.h>
 #include <string>
 #include <vector>
 #include <stdlib.h>
-
-namespace RAT {
 
 void ChromaPhotonList::FromArrays(float* _x,    float* _y,    float* _z,
                                   float* _px,   float* _py,   float* _pz,
@@ -31,6 +29,4 @@ void ChromaPhotonList::FromArrays(float* _x,    float* _y,    float* _z,
     pmtid.push_back(_pmtid[i]);
   }
 }
-
-} // namespace RAT
 
