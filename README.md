@@ -1,6 +1,6 @@
 chroma photon propagation server
 ================================
-This package lets you run a [chroma](http://chroma.bitbucket.com) server, which performs GPU-accelerated photon propagation for clients. Clients send `chroma-server` a list of initial photon vertices, and it replies with the final vertices of detected photons.
+This package lets you run a [chroma](http://chroma.bitbucket.org) server, which performs GPU-accelerated photon propagation for clients. Clients send `chroma-server` a list of initial photon vertices, and it replies with the final vertices of detected photons.
 
 Installation
 ------------
