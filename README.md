@@ -14,13 +14,13 @@ Usage
 -----
 To run a chroma server:
 
-    $ chroma-server [address]
+    $ chroma-server <detector> [options]
 
-where `address` is optional. The default server address is `tcp://*:5024`, i.e. listening on all interfaces on port 5024.
+where options include `--address=ADDRESS`. The default server address is `tcp://*:5024`, i.e. listening on all interfaces on port 5024.
 
 Clients
 -------
-The chroma server expects to receive ROOT-serialized `ChromaPhotonList` objects. The class definition is located in `src/`.
+The chroma server expects to receive ROOT-serialized `ChromaPhotonList` objects. The class definition is located in `src/ChromaPhotonList.hh`.
 
 Package Usage
 -------------
