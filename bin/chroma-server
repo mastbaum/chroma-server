@@ -1,23 +1,31 @@
 #!/usr/bin/env python
 
 import sys
+import optparse
 from chroma_server import server
 from chroma.tools import enable_debug_on_crash
-import chroma_sno
+from chroma.loader import load_geometry_from_string
 
-def serve(address):
-    print 'reticulating splines...'
-    s = server.ChromaServer(address, chroma_sno.sno())
+def serve(address, detector):
+    s = server.ChromaServer(address, detector)
 
     print 'starting chroma server listening on', address
     s.serve_forever()
 
-if __name__ == '__main__':
+def main():
     enable_debug_on_crash()
-    if len(sys.argv) > 1:
-        address = sys.argv[1]
-    else:
-        address = 'tcp://*:5024'
+    parser = optparse.OptionParser('%prog <detector> <options>')
+    parser.add_option('--address', dest='address', default='tcp://*:5024')
+    options, args = parser.parse_args()
 
-    serve(address)
+    if len(args) < 1:
+        sys.exit(parser.format_help())
+
+    print 'reticulating splines...'
+    detector = load_geometry_from_string(args[0])
+
+    serve(options.address, options.detector)
+
+if __name__ == '__main__':
+    main()
 

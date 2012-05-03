@@ -1,6 +1,5 @@
 import zmq
 
-from rat import ROOT
 from chroma import Simulation
 from chroma.event import SURFACE_DETECT
 
@@ -30,7 +29,7 @@ class ChromaServer:
             msg = self.socket.recv(copy=False)
 
             # parse ChromaPhotonList
-            cpl = serialize.deserialize(msg.bytes, ROOT.RAT.ChromaPhotonList.Class())
+            cpl = serialize.deserialize(msg.bytes)
             if not cpl:
                 print 'Error deserializing message data'
                 continue
@@ -44,6 +43,6 @@ class ChromaServer:
             # return final (detected) photons to client
             photons_out = event.photons_end
             cpl = photons.cpl_from_photons(photons_out, process_mask=SURFACE_DETECT, detector=self.detector)
-            msg = serialize.serialize(cpl, ROOT.RAT.ChromaPhotonList.Class())
+            msg = serialize.serialize(cpl)
             self.socket.send(msg)
 

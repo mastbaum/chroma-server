@@ -16,13 +16,11 @@
 
 #include <TObject.h>
 #include <G4ThreeVector.hh>
-#include <string>
 #include <vector>
 
 class ChromaPhotonList : public TObject {
 public:
   ChromaPhotonList() : TObject() {};
-  ~ChromaPhotonList() {};
 
   inline void AddPhoton(G4ThreeVector pos, G4ThreeVector mom, G4ThreeVector pol, float _t, float _wavelength, int _pmtid=-1) {
     x.push_back(pos.x());
@@ -55,13 +53,25 @@ public:
   }
 
   // Build a ChromaPhotonList object from C arrays
-  void FromArrays(float* x,    float* y,    float* z,
-                  float* px,   float* py,   float* pz,
-                  float* polx, float* poly, float* polz,
-                  float* t,
-                  float* wavelength,
-                  int* pmtid,
-                  int nphotons);
+  void FromArrays(float* _x,    float* _y,    float* _z,
+                  float* _px,   float* _py,   float* _pz,
+                  float* _polx, float* _poly, float* _polz,
+                  float* _t, float* _wavelength, int* _pmtid, int nphotons) {
+    for (int i=0; i<nphotons; i++) { 
+      x.push_back(_x[i]);
+      y.push_back(_y[i]);
+      z.push_back(_z[i]);
+      px.push_back(_px[i]);
+      py.push_back(_py[i]);
+      pz.push_back(_pz[i]);
+      polx.push_back(_polx[i]);
+      poly.push_back(_poly[i]);
+      polz.push_back(_polz[i]);
+      t.push_back(_t[i]);
+      wavelength.push_back(_wavelength[i]);
+      pmtid.push_back(_pmtid[i]);
+    }
+  }
 
   std::vector<float> x;
   std::vector<float> y;

@@ -1,9 +1,9 @@
 import numpy
-from rat import ROOT
+from rootimport import ROOT
 from chroma.event import Photons
 
 def photons_from_cpl(cpl):
-    '''make a chroma Photons object out of a ROOT.RAT.ChromaPhotonList. pmt id
+    '''make a chroma Photons object out of a ROOT.ChromaPhotonList. pmt id
     is ignored.
     '''
     x = numpy.array(cpl.x, dtype=numpy.float32)
@@ -21,15 +21,15 @@ def photons_from_cpl(cpl):
     polz = numpy.array(cpl.polz, dtype=numpy.float32)
     pol = numpy.column_stack((polx, poly, polz))
 
-    t = numpy.array(cpl.t, dtype=numpy.float32)
     wavelengths = numpy.array(cpl.wavelength, dtype=numpy.float32)
+    t = numpy.array(cpl.t, dtype=numpy.float32)
 
     photons = Photons(pos, dir, pol, wavelengths, t=t)
 
     return photons
 
 def cpl_from_photons(photons, process_mask=None, detector=None):
-    '''make a ROOT.RAT.ChromaPhotonList from a chroma Photons object
+    '''make a ROOT.ChromaPhotonList from a chroma Photons object
 
       * if process_mask is provided, photons are filtered accordingly
       * if detector is provided, pmt ids are calculated. else, they are set to -1
@@ -63,7 +63,7 @@ def cpl_from_photons(photons, process_mask=None, detector=None):
     else:
         pmtid = -1 * numpy.ones_like(t, dtype=int)
 
-    cpl = ROOT.RAT.ChromaPhotonList()
+    cpl = ROOT.ChromaPhotonList()
     cpl.FromArrays(x,    y,    z,
                    px,   py,   pz,
                    polx, poly, polz,
